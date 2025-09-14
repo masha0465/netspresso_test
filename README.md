@@ -36,7 +36,7 @@
 
 ## 상세 분석
 
-📋 **[테스트 이슈 리스트.pdf](./docs/netspresso_issue_list.pdf)**
+📋 **[테스트 이슈 리스트.pdf](./docs/NetsPresso 이슈 리스트_김선아.pdf)**
 - 발견된 이슈들과 개선 제안사항 정리
 
 ## 실행 방법
