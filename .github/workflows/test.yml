@@ -184,7 +184,7 @@ jobs:
         ## 📋 다음 단계
 
         1. 실패한 테스트가 있다면 원인 분석
-        2. API 키 및 환경 설정 검토
+        2. API 키 및 환경 설정 검토  
         3. 추가 테스트 케이스 개발
 
         ---
@@ -225,17 +225,14 @@ jobs:
           results/
         retention-days: 30
     
-    - name: Update repository
-      if: github.ref == 'refs/heads/main'
+    - name: Display results summary
+      if: always()
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        if [ -f "results/qa_summary_report.md" ]; then
-          git add results/qa_summary_report.md
-          
-          if ! git diff --staged --quiet; then
-            git commit -m "📊 Update QA report [automated]"
-            git push || echo "Push failed - may need to pull first"
-          fi
-        fi
+        echo "🎉 GitHub Actions 테스트 완료!"
+        echo ""
+        echo "📊 결과 확인 방법:"
+        echo "1. 위 단계의 'Upload results' 아티팩트 다운로드"
+        echo "2. results/ 폴더 내 qa_summary_report.md 확인"
+        echo "3. pytest_report.html로 상세 테스트 결과 확인"
+        echo ""
+        echo "🔗 아티팩트 다운로드: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
