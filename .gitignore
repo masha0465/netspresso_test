@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+netspresso_env/
+ENV/
+
+# Models (대용량 파일 제외)
+*.onnx
+*.pt
+!models/README.md
+
+# Results
+results/
+!results/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+config.yaml
