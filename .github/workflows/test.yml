@@ -6,9 +6,8 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    # 매일 오전 9시 (UTC)
     - cron: '0 9 * * *'
-  workflow_dispatch:  # 수동 실행
+  workflow_dispatch:
 
 jobs:
   test:
@@ -30,7 +29,6 @@ jobs:
         if [ -f requirements.txt ]; then
           pip install -r requirements.txt
         else
-          # 기본 의존성 설치
           pip install torch torchvision netspresso pytest pytest-html
         fi
         pip install pytest pytest-html pytest-json-report
@@ -56,185 +54,149 @@ jobs:
       if: steps.check_tests.outputs.has_tests == 'false'
       run: |
         cat > tests/test_basic_functionality.py << 'EOF'
-"""
-기본 NetsPresso 기능 테스트
-"""
-import pytest
-import os
-import sys
-from datetime import datetime
-
-# 프로젝트 루트를 path에 추가
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-class TestNetsPresso:
-    """NetsPresso 기본 기능 테스트"""
-    
-    def test_api_key_exists(self):
-        """API 키 존재 확인"""
-        api_key = os.environ.get('NETSPRESSO_API_KEY')
-        assert api_key is not None, "NETSPRESSO_API_KEY 환경변수가 설정되지 않음"
-        assert len(api_key) > 10, "API 키가 너무 짧음"
-        
-    def test_netspresso_import(self):
-        """NetsPresso 라이브러리 import 테스트"""
-        try:
-            import netspresso
-            from netspresso import NetsPresso
-            assert True
-        except ImportError as e:
-            pytest.skip(f"NetsPresso 라이브러리 없음: {e}")
-    
-    def test_basic_connection(self):
-        """기본 연결 테스트"""
-        try:
-            import netspresso
-            from netspresso import NetsPresso
-            
-            api_key = os.environ.get('NETSPRESSO_API_KEY')
-            if not api_key:
-                pytest.skip("API 키가 없어 연결 테스트 스킵")
-                
-            client = NetsPresso(api_key=api_key)
-            user_info = client.get_user_info()
-            
-            assert user_info is not None
-            assert 'email' in user_info or 'id' in user_info
-            print(f"✅ 연결 성공: {user_info.get('email', 'Unknown user')}")
-            
-        except ImportError:
-            pytest.skip("NetsPresso 라이브러리가 설치되지 않음")
-        except Exception as e:
-            pytest.fail(f"연결 테스트 실패: {e}")
-    
-    def test_torch_available(self):
-        """PyTorch 사용 가능 여부 테스트"""
-        try:
-            import torch
-            import torch.nn as nn
-            
-            # 간단한 모델 생성 테스트
-            model = nn.Sequential(
-                nn.Linear(10, 5),
-                nn.ReLU(),
-                nn.Linear(5, 1)
-            )
-            
-            # 더미 입력으로 테스트
-            x = torch.randn(1, 10)
-            output = model(x)
-            
-            assert output.shape == (1, 1)
-            print("✅ PyTorch 모델 생성 및 실행 성공")
-            
-        except ImportError:
-            pytest.skip("PyTorch가 설치되지 않음")
-    
-    def test_file_system_access(self):
-        """파일 시스템 접근 테스트"""
-        import tempfile
+        """
+        기본 NetsPresso 기능 테스트
+        """
+        import pytest
         import os
-        
-        # 임시 파일 생성 및 접근 테스트
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-            f.write("test content")
-            temp_path = f.name
-        
-        try:
-            # 파일 읽기 테스트
-            with open(temp_path, 'r') as f:
-                content = f.read()
-            
-            assert content == "test content"
-            
-            # results 디렉토리 생성 테스트
-            os.makedirs('results/test_results', exist_ok=True)
-            assert os.path.exists('results/test_results')
-            
-            print("✅ 파일 시스템 접근 성공")
-            
-        finally:
-            # 임시 파일 삭제
-            if os.path.exists(temp_path):
-                os.unlink(temp_path)
-
-class TestReportGeneration:
-    """리포트 생성 테스트"""
-    
-    def test_json_report_creation(self):
-        """JSON 리포트 생성 테스트"""
-        import json
+        import sys
         from datetime import datetime
         
-        # 테스트 결과 데이터 생성
-        test_result = {
-            "test_name": "pytest_basic_test",
-            "timestamp": datetime.now().isoformat(),
-            "result": {
-                "success": True,
-                "details": {
-                    "test_type": "pytest_integration",
-                    "environment": "github_actions"
+        # 프로젝트 루트를 path에 추가
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+        
+        class TestNetsPresso:
+            """NetsPresso 기본 기능 테스트"""
+            
+            def test_api_key_exists(self):
+                """API 키 존재 확인"""
+                api_key = os.environ.get('NETSPRESSO_API_KEY')
+                assert api_key is not None, "NETSPRESSO_API_KEY 환경변수가 설정되지 않음"
+                assert len(api_key) > 10, "API 키가 너무 짧음"
+                
+            def test_netspresso_import(self):
+                """NetsPresso 라이브러리 import 테스트"""
+                try:
+                    import netspresso
+                    from netspresso import NetsPresso
+                    assert True
+                except ImportError as e:
+                    pytest.skip(f"NetsPresso 라이브러리 없음: {e}")
+            
+            def test_basic_connection(self):
+                """기본 연결 테스트"""
+                try:
+                    import netspresso
+                    from netspresso import NetsPresso
+                    
+                    api_key = os.environ.get('NETSPRESSO_API_KEY')
+                    if not api_key:
+                        pytest.skip("API 키가 없어 연결 테스트 스킵")
+                        
+                    client = NetsPresso(api_key=api_key)
+                    user_info = client.get_user_info()
+                    
+                    assert user_info is not None
+                    assert 'email' in user_info or 'id' in user_info
+                    print(f"✅ 연결 성공: {user_info.get('email', 'Unknown user')}")
+                    
+                except ImportError:
+                    pytest.skip("NetsPresso 라이브러리가 설치되지 않음")
+                except Exception as e:
+                    pytest.fail(f"연결 테스트 실패: {e}")
+            
+            def test_torch_available(self):
+                """PyTorch 사용 가능 여부 테스트"""
+                try:
+                    import torch
+                    import torch.nn as nn
+                    
+                    # 간단한 모델 생성 테스트
+                    model = nn.Sequential(
+                        nn.Linear(10, 5),
+                        nn.ReLU(),
+                        nn.Linear(5, 1)
+                    )
+                    
+                    # 더미 입력으로 테스트
+                    x = torch.randn(1, 10)
+                    output = model(x)
+                    
+                    assert output.shape == (1, 1)
+                    print("✅ PyTorch 모델 생성 및 실행 성공")
+                    
+                except ImportError:
+                    pytest.skip("PyTorch가 설치되지 않음")
+            
+            def test_file_system_access(self):
+                """파일 시스템 접근 테스트"""
+                import tempfile
+                import os
+                
+                # 임시 파일 생성 및 접근 테스트
+                with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+                    f.write("test content")
+                    temp_path = f.name
+                
+                try:
+                    # 파일 읽기 테스트
+                    with open(temp_path, 'r') as f:
+                        content = f.read()
+                    
+                    assert content == "test content"
+                    
+                    # results 디렉토리 생성 테스트
+                    os.makedirs('results/test_results', exist_ok=True)
+                    assert os.path.exists('results/test_results')
+                    
+                    print("✅ 파일 시스템 접근 성공")
+                    
+                finally:
+                    # 임시 파일 삭제
+                    if os.path.exists(temp_path):
+                        os.unlink(temp_path)
+
+        class TestReportGeneration:
+            """리포트 생성 테스트"""
+            
+            def test_json_report_creation(self):
+                """JSON 리포트 생성 테스트"""
+                import json
+                from datetime import datetime
+                
+                # 테스트 결과 데이터 생성
+                test_result = {
+                    "test_name": "pytest_basic_test",
+                    "timestamp": datetime.now().isoformat(),
+                    "result": {
+                        "success": True,
+                        "details": {
+                            "test_type": "pytest_integration",
+                            "environment": "github_actions"
+                        }
+                    }
                 }
-            }
-        }
-        
-        # results 디렉토리 생성
-        os.makedirs('results/test_results', exist_ok=True)
-        
-        # JSON 파일 저장
-        filename = f'results/test_results/pytest_result_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(test_result, f, ensure_ascii=False, indent=2)
-        
-        # 파일 존재 확인
-        assert os.path.exists(filename)
-        
-        # 파일 내용 확인
-        with open(filename, 'r', encoding='utf-8') as f:
-            loaded_data = json.load(f)
-        
-        assert loaded_data['test_name'] == 'pytest_basic_test'
-        assert loaded_data['result']['success'] is True
-        
-        print(f"✅ 테스트 결과 JSON 파일 생성: {filename}")
-
-# 테스트 실행 후 결과를 저장하는 함수
-def pytest_sessionfinish(session, exitstatus):
-    """pytest 세션 종료 시 호출되는 함수"""
-    import json
-    from datetime import datetime
-    
-    # 테스트 결과 요약
-    total_tests = session.testscollected
-    failed_tests = session.testsfailed
-    passed_tests = total_tests - failed_tests
-    
-    summary = {
-        "test_name": "pytest_session_summary",
-        "timestamp": datetime.now().isoformat(),
-        "result": {
-            "success": exitstatus == 0,
-            "details": {
-                "total_tests": total_tests,
-                "passed_tests": passed_tests,
-                "failed_tests": failed_tests,
-                "exit_status": exitstatus,
-                "test_type": "pytest_summary"
-            }
-        }
-    }
-    
-    # 결과 저장
-    os.makedirs('results/test_results', exist_ok=True)
-    filename = f'results/test_results/pytest_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-    
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
-    
-    print(f"\n📊 테스트 세션 요약이 저장되었습니다: {filename}")
-EOF
-
+                
+                # results 디렉토리 생성
+                os.makedirs('results/test_results', exist_ok=True)
+                
+                # JSON 파일 저장
+                filename = f'results/test_results/pytest_result_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+                with open(filename, 'w', encoding='utf-8') as f:
+                    json.dump(test_result, f, ensure_ascii=False, indent=2)
+                
+                # 파일 존재 확인
+                assert os.path.exists(filename)
+                
+                # 파일 내용 확인
+                with open(filename, 'r', encoding='utf-8') as f:
+                    loaded_data = json.load(f)
+                
+                assert loaded_data['test_name'] == 'pytest_basic_test'
+                assert loaded_data['result']['success'] is True
+                
+                print(f"✅ 테스트 결과 JSON 파일 생성: {filename}")
+        EOF
         echo "✅ 기본 테스트 파일 생성 완료"
     
     - name: Run pytest tests
@@ -251,13 +213,11 @@ EOF
       run: |
         echo "🔍 추가 NetsPresso 테스트 실행 중..."
         
-        # 기존 NetsPresso 클라이언트가 있다면 실행
         if [ -f "src/netspresso_client.py" ]; then
           echo "NetsPresso 클라이언트 실행 중..."
           python src/netspresso_client.py || echo "클라이언트 실행 완료 (일부 오류 가능)"
         fi
         
-        # CI 테스트 스크립트가 있다면 실행
         if [ -f "src/ci_netspresso_test.py" ]; then
           echo "CI 테스트 스크립트 실행 중..."
           python src/ci_netspresso_test.py || echo "CI 테스트 완료 (일부 오류 가능)"
@@ -280,96 +240,94 @@ EOF
           python scripts/generate_qa_report.py
         else
           echo "⚠️ generate_qa_report.py 없음, 기본 리포트 생성"
-          python -c "
-import json
-import os
-from datetime import datetime
+          python3 << 'PYTHON_SCRIPT'
+        import json
+        import os
+        from datetime import datetime
 
-# pytest 결과 읽기
-pytest_report_path = 'results/pytest_report.json'
-report_content = '# NetsPresso QA 테스트 리포트\n\n'
-report_content += f'**생성 시각**: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")}\n\n'
+        # pytest 결과 읽기
+        pytest_report_path = 'results/pytest_report.json'
+        report_content = '# NetsPresso QA 테스트 리포트\n\n'
+        report_content += f'**생성 시각**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n'
 
-if os.path.exists(pytest_report_path):
-    try:
-        with open(pytest_report_path, 'r', encoding='utf-8') as f:
-            pytest_data = json.load(f)
-        
-        summary = pytest_data.get('summary', {})
-        total = summary.get('total', 0)
-        passed = summary.get('passed', 0)
-        failed = summary.get('failed', 0)
-        
-        report_content += '## 📊 테스트 결과 요약\n\n'
-        report_content += f'| 항목 | 값 |\n'
-        report_content += f'|------|----:|\n'
-        report_content += f'| 전체 테스트 | {total}개 |\n'
-        report_content += f'| 성공 | {passed}개 |\n'
-        report_content += f'| 실패 | {failed}개 |\n'
-        
-        if total > 0:
-            success_rate = (passed / total) * 100
-            report_content += f'| 성공률 | {success_rate:.1f}% |\n'
-        
-        report_content += '\n## 🔍 상세 결과\n\n'
-        
-        # 테스트별 결과
-        tests = pytest_data.get('tests', [])
-        for test in tests[:10]:  # 처음 10개만
-            status = '✅' if test.get('outcome') == 'passed' else '❌'
-            name = test.get('nodeid', 'Unknown test')
-            report_content += f'### {status} {name}\n\n'
-            
-    except Exception as e:
-        report_content += f'pytest 결과 파싱 오류: {e}\n\n'
-else:
-    report_content += '⚠️ pytest 결과 파일을 찾을 수 없습니다.\n\n'
+        if os.path.exists(pytest_report_path):
+            try:
+                with open(pytest_report_path, 'r', encoding='utf-8') as f:
+                    pytest_data = json.load(f)
+                
+                summary = pytest_data.get('summary', {})
+                total = summary.get('total', 0)
+                passed = summary.get('passed', 0)
+                failed = summary.get('failed', 0)
+                
+                report_content += '## 📊 테스트 결과 요약\n\n'
+                report_content += f'| 항목 | 값 |\n'
+                report_content += f'|------|----:|\n'
+                report_content += f'| 전체 테스트 | {total}개 |\n'
+                report_content += f'| 성공 | {passed}개 |\n'
+                report_content += f'| 실패 | {failed}개 |\n'
+                
+                if total > 0:
+                    success_rate = (passed / total) * 100
+                    report_content += f'| 성공률 | {success_rate:.1f}% |\n'
+                
+                report_content += '\n## 🔍 상세 결과\n\n'
+                
+                # 테스트별 결과
+                tests = pytest_data.get('tests', [])
+                for test in tests[:10]:  # 처음 10개만
+                    status = '✅' if test.get('outcome') == 'passed' else '❌'
+                    name = test.get('nodeid', 'Unknown test')
+                    report_content += f'### {status} {name}\n\n'
+                    
+            except Exception as e:
+                report_content += f'pytest 결과 파싱 오류: {e}\n\n'
+        else:
+            report_content += '⚠️ pytest 결과 파일을 찾을 수 없습니다.\n\n'
 
-# 기본 권장사항 추가
-report_content += '''## 🎯 QA 권장사항
+        # 기본 권장사항 추가
+        report_content += '''## 🎯 QA 권장사항
 
-### 우선순위 높음
-- 모든 테스트가 통과할 수 있도록 환경 설정 검토
-- API 키 설정 및 네트워크 연결 상태 확인
+        ### 우선순위 높음
+        - 모든 테스트가 통과할 수 있도록 환경 설정 검토
+        - API 키 설정 및 네트워크 연결 상태 확인
 
-### 개선 제안  
-- 더 많은 테스트 케이스 추가
-- 성능 테스트 및 부하 테스트 고려
-- 자동화된 배포 테스트 추가
+        ### 개선 제안  
+        - 더 많은 테스트 케이스 추가
+        - 성능 테스트 및 부하 테스트 고려
+        - 자동화된 배포 테스트 추가
 
----
-*이 리포트는 GitHub Actions에서 자동 생성되었습니다.*
-'''
+        ---
+        *이 리포트는 GitHub Actions에서 자동 생성되었습니다.*
+        '''
 
-# 리포트 저장
-os.makedirs('results', exist_ok=True)
-with open('results/qa_summary_report.md', 'w', encoding='utf-8') as f:
-    f.write(report_content)
+        # 리포트 저장
+        os.makedirs('results', exist_ok=True)
+        with open('results/qa_summary_report.md', 'w', encoding='utf-8') as f:
+            f.write(report_content)
 
-print('✅ QA 리포트 생성 완료')
-"
-        fi
+        print('✅ QA 리포트 생성 완료')
+        PYTHON_SCRIPT
     
     - name: Generate enhanced test summary
       if: always()
       run: |
         echo "📝 향상된 테스트 요약 생성 중..."
-        cat > test_summary.txt << EOF
-=== NetsPresso QA 테스트 실행 결과 ===
-실행 시간: $(date)
-GitHub Run ID: ${{ github.run_id }}
-워크플로우: ${{ github.workflow }}
-트리거: ${{ github.event_name }}
-브랜치: ${{ github.ref_name }}
-
-=== 파일 확인 ===
-EOF
-        echo "생성된 파일들:" >> test_summary.txt
-        find results/ -type f -name "*.json" -o -name "*.html" -o -name "*.md" 2>/dev/null >> test_summary.txt || echo "결과 파일 없음" >> test_summary.txt
-        
-        echo "" >> test_summary.txt
-        echo "=== 디렉토리 구조 ===" >> test_summary.txt  
-        ls -la results/ >> test_summary.txt 2>/dev/null || echo "results 디렉토리 없음" >> test_summary.txt
+        {
+          echo "=== NetsPresso QA 테스트 실행 결과 ==="
+          echo "실행 시간: $(date)"
+          echo "GitHub Run ID: ${{ github.run_id }}"
+          echo "워크플로우: ${{ github.workflow }}"
+          echo "트리거: ${{ github.event_name }}"
+          echo "브랜치: ${{ github.ref_name }}"
+          echo ""
+          echo "=== 파일 확인 ==="
+          echo "생성된 파일들:"
+          find results/ -type f -name "*.json" -o -name "*.html" -o -name "*.md" 2>/dev/null || echo "결과 파일 없음"
+          echo ""
+          echo "=== 디렉토리 구조 ==="
+          ls -la results/ 2>/dev/null || echo "results 디렉토리 없음"
+        } > test_summary.txt
     
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -433,16 +391,15 @@ EOF
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # QA 리포트가 있으면 커밋
         if [ -f "results/qa_summary_report.md" ]; then
           git add results/qa_summary_report.md
           
           if ! git diff --staged --quiet; then
             git commit -m "📊 Update QA summary report [automated]
             
-- 테스트 실행: ${{ github.run_id }}
-- 생성 시간: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-- 트리거: ${{ github.event_name }}"
+        - 테스트 실행: ${{ github.run_id }}
+        - 생성 시간: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        - 트리거: ${{ github.event_name }}"
             git push
           fi
         fi
