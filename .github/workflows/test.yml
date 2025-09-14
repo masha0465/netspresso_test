@@ -94,7 +94,7 @@ jobs:
             
             netspresso_total = len(all_results["netspresso_results"])
             netspresso_success = sum(1 for r in all_results["netspresso_results"] 
-                                   if r.get("success", False))
+                       if r.get("result", {}).get("success", False))
             
             # HTML 생성 (간소화 버전)
             html_content = f"""
