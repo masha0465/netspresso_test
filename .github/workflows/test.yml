@@ -37,7 +37,7 @@ jobs:
         date >> test_summary.txt
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # v3 -> v4로 변경
       if: always()
       with:
         name: test-results
